@@ -1,0 +1,14 @@
+# Target labels
+ kokkos-populate
+# Source files and their labels
+/Users/admin/CLionProjects/HW/cmake-build-debug/_deps/kokkos-subbuild/CMakeFiles/kokkos-populate
+/Users/admin/CLionProjects/HW/cmake-build-debug/_deps/kokkos-subbuild/CMakeFiles/kokkos-populate.rule
+/Users/admin/CLionProjects/HW/cmake-build-debug/_deps/kokkos-subbuild/CMakeFiles/kokkos-populate-complete.rule
+/Users/admin/CLionProjects/HW/cmake-build-debug/_deps/kokkos-subbuild/kokkos-populate-prefix/src/kokkos-populate-stamp/kokkos-populate-install.rule
+/Users/admin/CLionProjects/HW/cmake-build-debug/_deps/kokkos-subbuild/kokkos-populate-prefix/src/kokkos-populate-stamp/kokkos-populate-mkdir.rule
+/Users/admin/CLionProjects/HW/cmake-build-debug/_deps/kokkos-subbuild/kokkos-populate-prefix/src/kokkos-populate-stamp/kokkos-populate-download.rule
+/Users/admin/CLionProjects/HW/cmake-build-debug/_deps/kokkos-subbuild/kokkos-populate-prefix/src/kokkos-populate-stamp/kokkos-populate-update.rule
+/Users/admin/CLionProjects/HW/cmake-build-debug/_deps/kokkos-subbuild/kokkos-populate-prefix/src/kokkos-populate-stamp/kokkos-populate-patch.rule
+/Users/admin/CLionProjects/HW/cmake-build-debug/_deps/kokkos-subbuild/kokkos-populate-prefix/src/kokkos-populate-stamp/kokkos-populate-configure.rule
+/Users/admin/CLionProjects/HW/cmake-build-debug/_deps/kokkos-subbuild/kokkos-populate-prefix/src/kokkos-populate-stamp/kokkos-populate-build.rule
+/Users/admin/CLionProjects/HW/cmake-build-debug/_deps/kokkos-subbuild/kokkos-populate-prefix/src/kokkos-populate-stamp/kokkos-populate-test.rule

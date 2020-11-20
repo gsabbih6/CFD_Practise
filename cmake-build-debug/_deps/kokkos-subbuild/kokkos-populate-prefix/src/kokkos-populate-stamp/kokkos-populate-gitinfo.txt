@@ -1,0 +1,3 @@
+repository='https://github.com/kokkos/kokkos.git'
+module=''
+tag='origin'

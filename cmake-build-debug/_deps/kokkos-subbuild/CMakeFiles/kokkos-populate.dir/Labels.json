@@ -1,0 +1,46 @@
+{
+	"sources" : 
+	[
+		{
+			"file" : "/Users/admin/CLionProjects/HW/cmake-build-debug/_deps/kokkos-subbuild/CMakeFiles/kokkos-populate"
+		},
+		{
+			"file" : "/Users/admin/CLionProjects/HW/cmake-build-debug/_deps/kokkos-subbuild/CMakeFiles/kokkos-populate.rule"
+		},
+		{
+			"file" : "/Users/admin/CLionProjects/HW/cmake-build-debug/_deps/kokkos-subbuild/CMakeFiles/kokkos-populate-complete.rule"
+		},
+		{
+			"file" : "/Users/admin/CLionProjects/HW/cmake-build-debug/_deps/kokkos-subbuild/kokkos-populate-prefix/src/kokkos-populate-stamp/kokkos-populate-install.rule"
+		},
+		{
+			"file" : "/Users/admin/CLionProjects/HW/cmake-build-debug/_deps/kokkos-subbuild/kokkos-populate-prefix/src/kokkos-populate-stamp/kokkos-populate-mkdir.rule"
+		},
+		{
+			"file" : "/Users/admin/CLionProjects/HW/cmake-build-debug/_deps/kokkos-subbuild/kokkos-populate-prefix/src/kokkos-populate-stamp/kokkos-populate-download.rule"
+		},
+		{
+			"file" : "/Users/admin/CLionProjects/HW/cmake-build-debug/_deps/kokkos-subbuild/kokkos-populate-prefix/src/kokkos-populate-stamp/kokkos-populate-update.rule"
+		},
+		{
+			"file" : "/Users/admin/CLionProjects/HW/cmake-build-debug/_deps/kokkos-subbuild/kokkos-populate-prefix/src/kokkos-populate-stamp/kokkos-populate-patch.rule"
+		},
+		{
+			"file" : "/Users/admin/CLionProjects/HW/cmake-build-debug/_deps/kokkos-subbuild/kokkos-populate-prefix/src/kokkos-populate-stamp/kokkos-populate-configure.rule"
+		},
+		{
+			"file" : "/Users/admin/CLionProjects/HW/cmake-build-debug/_deps/kokkos-subbuild/kokkos-populate-prefix/src/kokkos-populate-stamp/kokkos-populate-build.rule"
+		},
+		{
+			"file" : "/Users/admin/CLionProjects/HW/cmake-build-debug/_deps/kokkos-subbuild/kokkos-populate-prefix/src/kokkos-populate-stamp/kokkos-populate-test.rule"
+		}
+	],
+	"target" : 
+	{
+		"labels" : 
+		[
+			"kokkos-populate"
+		],
+		"name" : "kokkos-populate"
+	}
+}

@@ -1,0 +1,46 @@
+{
+	"sources" : 
+	[
+		{
+			"file" : "/Users/admin/CLionProjects/HW/cmake-build-debug/_deps/matplot-subbuild/CMakeFiles/matplot-populate"
+		},
+		{
+			"file" : "/Users/admin/CLionProjects/HW/cmake-build-debug/_deps/matplot-subbuild/CMakeFiles/matplot-populate.rule"
+		},
+		{
+			"file" : "/Users/admin/CLionProjects/HW/cmake-build-debug/_deps/matplot-subbuild/CMakeFiles/matplot-populate-complete.rule"
+		},
+		{
+			"file" : "/Users/admin/CLionProjects/HW/cmake-build-debug/_deps/matplot-subbuild/matplot-populate-prefix/src/matplot-populate-stamp/matplot-populate-install.rule"
+		},
+		{
+			"file" : "/Users/admin/CLionProjects/HW/cmake-build-debug/_deps/matplot-subbuild/matplot-populate-prefix/src/matplot-populate-stamp/matplot-populate-mkdir.rule"
+		},
+		{
+			"file" : "/Users/admin/CLionProjects/HW/cmake-build-debug/_deps/matplot-subbuild/matplot-populate-prefix/src/matplot-populate-stamp/matplot-populate-download.rule"
+		},
+		{
+			"file" : "/Users/admin/CLionProjects/HW/cmake-build-debug/_deps/matplot-subbuild/matplot-populate-prefix/src/matplot-populate-stamp/matplot-populate-update.rule"
+		},
+		{
+			"file" : "/Users/admin/CLionProjects/HW/cmake-build-debug/_deps/matplot-subbuild/matplot-populate-prefix/src/matplot-populate-stamp/matplot-populate-patch.rule"
+		},
+		{
+			"file" : "/Users/admin/CLionProjects/HW/cmake-build-debug/_deps/matplot-subbuild/matplot-populate-prefix/src/matplot-populate-stamp/matplot-populate-configure.rule"
+		},
+		{
+			"file" : "/Users/admin/CLionProjects/HW/cmake-build-debug/_deps/matplot-subbuild/matplot-populate-prefix/src/matplot-populate-stamp/matplot-populate-build.rule"
+		},
+		{
+			"file" : "/Users/admin/CLionProjects/HW/cmake-build-debug/_deps/matplot-subbuild/matplot-populate-prefix/src/matplot-populate-stamp/matplot-populate-test.rule"
+		}
+	],
+	"target" : 
+	{
+		"labels" : 
+		[
+			"matplot-populate"
+		],
+		"name" : "matplot-populate"
+	}
+}
