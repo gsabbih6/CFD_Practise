@@ -1,3 +1,0 @@
-/Users/admin/CLionProjects/HW/cmake-build-debug/_deps/kokkos-subbuild/CMakeFiles/rebuild_cache.dir
-/Users/admin/CLionProjects/HW/cmake-build-debug/_deps/kokkos-subbuild/CMakeFiles/edit_cache.dir
-/Users/admin/CLionProjects/HW/cmake-build-debug/_deps/kokkos-subbuild/CMakeFiles/kokkos-populate.dir
