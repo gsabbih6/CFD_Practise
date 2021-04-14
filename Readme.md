@@ -2,7 +2,7 @@
 
 This repository is a compilation of implementations of several algorithms used in **CFD**. Codes are a result of assigmenst
 given and course taught by **Dr. Sreenivas at UTC**. If you find them interesting, helpful, any mistakes or just want to say Hi!, send me an email
-[gsabbih5@gmail.com]()
+[gsabbih5@gmail.com](gsabbih5@gmail.com)
 ---
 ## Finite Difference methods for solving PDEs
 The implementation is found  the FiniteDifference.cpp file which contains an application of the FTCS, FTBS and Lax 
