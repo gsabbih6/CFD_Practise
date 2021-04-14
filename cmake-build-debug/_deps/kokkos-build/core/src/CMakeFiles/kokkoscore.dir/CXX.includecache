@@ -6,26 +6,6 @@
 
 #IncludeRegexTransform: 
 
-/Users/admin/CLionProjects/HW/cmake-build-debug/_deps/kokkos-src/core/src/impl/Kokkos_CPUDiscovery.cpp
-windows.h
--
-sys/types.h
--
-sys/sysctl.h
--
-unistd.h
--
-cstdio
--
-cstdlib
--
-cstring
--
-cerrno
--
-string
--
-
 /Users/admin/CLionProjects/HW/cmake-build-debug/_deps/kokkos-src/core/src/impl/Kokkos_Core.cpp
 Kokkos_Core.hpp
 -
