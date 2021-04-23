@@ -5,7 +5,7 @@
 #include "ThomasAlgorithm.h"
 #include <iostream>
 #include <vector>
-#include <Kokkos_Core.hpp>
+//#include <Kokkos_Core.hpp>
 
 using namespace std;
 //using namespace matplot;

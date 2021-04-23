@@ -1,0 +1,46 @@
+{
+	"sources" : 
+	[
+		{
+			"file" : "/Users/admin/CLionProjects/HW/cmake-build-debug/_deps/boost-subbuild/CMakeFiles/boost-populate"
+		},
+		{
+			"file" : "/Users/admin/CLionProjects/HW/cmake-build-debug/_deps/boost-subbuild/CMakeFiles/boost-populate.rule"
+		},
+		{
+			"file" : "/Users/admin/CLionProjects/HW/cmake-build-debug/_deps/boost-subbuild/CMakeFiles/boost-populate-complete.rule"
+		},
+		{
+			"file" : "/Users/admin/CLionProjects/HW/cmake-build-debug/_deps/boost-subbuild/boost-populate-prefix/src/boost-populate-stamp/boost-populate-install.rule"
+		},
+		{
+			"file" : "/Users/admin/CLionProjects/HW/cmake-build-debug/_deps/boost-subbuild/boost-populate-prefix/src/boost-populate-stamp/boost-populate-mkdir.rule"
+		},
+		{
+			"file" : "/Users/admin/CLionProjects/HW/cmake-build-debug/_deps/boost-subbuild/boost-populate-prefix/src/boost-populate-stamp/boost-populate-download.rule"
+		},
+		{
+			"file" : "/Users/admin/CLionProjects/HW/cmake-build-debug/_deps/boost-subbuild/boost-populate-prefix/src/boost-populate-stamp/boost-populate-update.rule"
+		},
+		{
+			"file" : "/Users/admin/CLionProjects/HW/cmake-build-debug/_deps/boost-subbuild/boost-populate-prefix/src/boost-populate-stamp/boost-populate-patch.rule"
+		},
+		{
+			"file" : "/Users/admin/CLionProjects/HW/cmake-build-debug/_deps/boost-subbuild/boost-populate-prefix/src/boost-populate-stamp/boost-populate-configure.rule"
+		},
+		{
+			"file" : "/Users/admin/CLionProjects/HW/cmake-build-debug/_deps/boost-subbuild/boost-populate-prefix/src/boost-populate-stamp/boost-populate-build.rule"
+		},
+		{
+			"file" : "/Users/admin/CLionProjects/HW/cmake-build-debug/_deps/boost-subbuild/boost-populate-prefix/src/boost-populate-stamp/boost-populate-test.rule"
+		}
+	],
+	"target" : 
+	{
+		"labels" : 
+		[
+			"boost-populate"
+		],
+		"name" : "boost-populate"
+	}
+}
