@@ -4,7 +4,6 @@ This repository is a compilation of implementations of several algorithms used i
 assigmenst given and course taught by **Dr. Sreenivas at UTC**. If you find them interesting, helpful, any mistakes or
 just want to say Hi!, send me an email
 [gsabbih5@gmail.com](mailto:gsabbih5@gmail.com)
----
 
 ## Finite Difference methods for solving PDEs
 
@@ -157,7 +156,7 @@ int ThomasAlgorithm::DETGTRI(vector<vector<double> > &matrix) {
 The shock tube problem can be modelled using the Eulers Equations of state. The Lax-Wendroff solution to the problem is
 found below
 
-```c++
+``` c++
 map<string, vector<double>> ShockTubeLaxWendroff::compute_lax_wendrof(tuple<double, double, double> leftstate,
 tuple<double, double, double> rightstate,
 tuple<double, double, double> geometry, double t,
@@ -293,7 +292,7 @@ return {
 
 I am using matplot library for ploting the results as shown below
 
-```c++
+``` c++
 void plotting(map<string, vector<double>> exact, map<string, vector<double>> results, string key,
 map<string, string> lookup) {
    plot(results.at("x"), results.at(key), exact.at("x"), exact.at(key));

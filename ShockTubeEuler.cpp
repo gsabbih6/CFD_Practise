@@ -2,31 +2,13 @@
 // Created by Admin on 4/13/21.
 //
 
-#include "ShockTubeLaxWendroff.h"
+#include "ShockTubeEuler.h"
 #include <boost/math/tools/roots.hpp>
 #include <map>
 
 namespace tools = boost::math::tools;
 
-double ShockTubeLaxWendroff::u_imhalf(double u_i, double u_im1, double h, double deltaT) {
-    double f_i = u_i * u_i / 2;
-    double f_im1 = u_im1 * u_im1 / 2;
-    return 0.5 * (u_i + u_im1) - 0.5 * ((deltaT / h) * (f_i - f_im1));
-}
-
-double ShockTubeLaxWendroff::u_iphalf(double u_i, double u_ip1, double h, double deltaT) {
-    double f_i = u_i * u_i / 2;
-    double f_ip1 = u_ip1 * u_ip1 / 2;
-    return 0.5 * (u_i + u_ip1) - 0.5 * ((deltaT / h) * (f_ip1 - f_i));
-}
-
-double ShockTubeLaxWendroff::u_leap_frog(double u_i, double u_iphalf, double u_imhalf, double h, double deltaT) {
-    double f_iphalf = u_iphalf * u_iphalf / 2;
-    double f_imhalf = u_imhalf * u_imhalf / 2;
-    return u_i - ((deltaT / h) * (f_iphalf - f_imhalf));
-}
-
-void ShockTubeLaxWendroff::print(string msg, vector<double> v) {
+void ShockTubeEuler::print(string msg, vector<double> v) {
     std::cout << msg << endl;
     for (auto i = v.begin(); i != v.end(); ++i)
         std::cout << *i << ' ';
@@ -34,8 +16,8 @@ void ShockTubeLaxWendroff::print(string msg, vector<double> v) {
 }
 
 tuple<vector<double>, vector<double>, vector<double>>
-ShockTubeLaxWendroff::W(vector<double> x, double xshock, tuple<double, double, double> leftstate,
-                        tuple<double, double, double> rightstate, double gamma) {
+ShockTubeEuler::W(vector<double> x, double xshock, tuple<double, double, double> leftstate,
+                  tuple<double, double, double> rightstate, double gamma) {
     vector<double> W1, W2, W3;
     W1.resize(x.size());
     W2.resize(x.size());
@@ -44,23 +26,17 @@ ShockTubeLaxWendroff::W(vector<double> x, double xshock, tuple<double, double, d
     tie(pl, rhol, ul) = leftstate;
     tie(pr, rhor, ur) = rightstate;
     vector<double> d;
-    for (int i = x.size() / 2; i < x.size(); i++) { // use xshcock
-
-        W1[i] = (rhor);
-        W2[i] = (rhor * ur);
-        W3[i] = (((pr / (gamma - 1.)) + (rhor * ur * ur * 0.5)));
+    for (int i = 0; i < x.size(); i++) { // use xshcock
+        if (x[i] > xshock) {
+            W1[i] = (rhor);
+            W2[i] = (rhor * ur);
+            W3[i] = (pr / (gamma - 1.) + (rhor * ur * ur * 0.5));
+        } else {
+            W1[i] = (rhol);
+            W2[i] = (rhol * ul);
+            W3[i] = (pl / (gamma - 1.) + (rhol * ul * ul * 0.5));
+        }
     }
-    for (int i = 0; i < x.size() / 2; i++) {
-        W1[i] = (rhol);
-        W2[i] = (rhol * ul);
-        W3[i] = (((pl / (gamma - 1.)) + (rhol * ul * ul * 0.5)));
-    }
-//        elsese {
-//            W1[i] = 0;
-//            W2[i] = 0;
-//            W3[i] = 0;
-//        }
-//}
 //    print("W1", W1);
 //    print("W2", W2);
 //    print("W3", W3);
@@ -69,8 +45,7 @@ ShockTubeLaxWendroff::W(vector<double> x, double xshock, tuple<double, double, d
 
 
 tuple<vector<double>, vector<double>, vector<double>, vector<double>>
-ShockTubeLaxWendroff::flux(tuple<vector<double>, vector<double>, vector<double>> Ws,
-                           double gamma) {
+ShockTubeEuler::flux(tuple<vector<double>, vector<double>, vector<double>> Ws, double gamma) {
     vector<double> F1, F2, F3, P;
     vector<double> W1, W2, W3;
     tie(W1, W2, W3) = Ws;
@@ -82,10 +57,10 @@ ShockTubeLaxWendroff::flux(tuple<vector<double>, vector<double>, vector<double>>
     for (int i = 0; i < W1.size(); i++) {
         P[i] = (gamma - 1.) * ((2. * W3[i] * W1[i] - W2[i] * W2[i]) / (2. * (W1[i])));
     }
-    for (int i = 0; i < W1.size(); i++) {
+    for (int i = 1; i < W1.size() - 1; i++) {
         F2[i] = (W2[i] * W2[i] / W1[i]) + P[i];
     }
-    for (int i = 0; i < W1.size(); i++) {
+    for (int i = 1; i < W1.size() - 1; i++) {
         F3[i] = (W2[i] / W1[i]) * (W3[i] + P[i]);
     }
 
@@ -98,13 +73,61 @@ ShockTubeLaxWendroff::flux(tuple<vector<double>, vector<double>, vector<double>>
     return make_tuple(F1, F2, F3, P);
 }
 
-int ShockTubeLaxWendroff::solutionSize(double deltaX, double startX, double endX) {
+tuple<vector<double>, vector<double>, vector<double>, vector<double>, vector<double>, vector<double>, vector<double>>
+ShockTubeEuler::flux_van_leer(tuple<vector<double>, vector<double>, vector<double>> Ws,
+                              double gamma) {
+    vector<double> F_ap, F_an, F_bp, F_bn, F1_p, F2_p, F3_p, F1_n, F2_n, F3_n, P, C, M, W1, W2, W3;
+    tie(W1, W2, W3) = Ws;
+    F_ap.resize(W1.size());
+    F_an.resize(W1.size());
+    F_bp.resize(W1.size());
+    F_bn.resize(W1.size());
+    F1_p.resize(W1.size());
+    F2_p.resize(W1.size());
+    F3_p.resize(W1.size());
+    F1_n.resize(W1.size());
+    F2_n.resize(W1.size());
+    F3_n.resize(W1.size());
+    P.resize(W1.size());
+    C.resize(W1.size());
+    M.resize(W1.size());
+    for (int i = 0; i < W1.size(); i++) {
+        P[i] = (gamma - 1.) * ((2. * W3[i] * W1[i] - W2[i] * W2[i]) / (2. * (W1[i])));
+        C[i] = sqrt(gamma * P[i] / W1[i]);
+        M[i] = W2[i] / (W1[i] * C[i]);
+    }
+    for (int i = 1; i < W1.size() - 1; i++) {
+//        P[i] = (gamma - 1.) * ((2. * W3[i] * W1[i] - W2[i] * W2[i]) / (2. * (W1[i])));
+
+        F_ap[i] = 0.25 * W1[i] * C[i] * (M[i] + 1) * (M[i] + 1);
+        F_an[i] = -0.25 * W1[i] * C[i] * (M[i] - 1) * (M[i] - 1);
+        F_bp[i] = (gamma - 1) * M[i] * C[i] + 2 * C[i];
+        F_bn[i] = -(gamma - 1) * M[i] * C[i] - 2 * C[i];
+
+        F1_p[i] = F_ap[i];
+        F2_p[i] = F_ap[i] * F_bp[i] / gamma;
+        F3_p[i] = F_ap[i] * F_bp[i] * F_bp[i] / (2 * (gamma * gamma - 1));
+
+        F1_n[i] = F_an[i];
+        F2_n[i] = F_an[i] * F_bn[i] / gamma;
+        F3_n[i] = F_an[i] * F_bn[i] * F_bn[i] / (2 * (gamma * gamma - 1));
+    }
+    print("P", P);
+//    print("W1", W1);
+//    print("W2", W2);
+//    print("W3", W3);
+
+
+    return make_tuple(F1_p, F2_p, F3_p, F1_n, F2_n, F3_n, P);
+}
+
+int ShockTubeEuler::solutionSize(double deltaX, double startX, double endX) {
 
     double maxX = endX - startX;
     return (int) ((maxX / deltaX) + .5) + 1;
 }
 
-vector<double> ShockTubeLaxWendroff::xx(double startX, double endX, double deltaX) {
+vector<double> ShockTubeEuler::xx(double startX, double endX, double deltaX) {
 
     vector<double> x;
     x.resize(solutionSize(deltaX, startX, endX));
@@ -115,11 +138,11 @@ vector<double> ShockTubeLaxWendroff::xx(double startX, double endX, double delta
     return x;
 }
 
-map<string, vector<double>> ShockTubeLaxWendroff::compute_lax_wendrof(tuple<double, double, double> leftstate,
-                                                                      tuple<double, double, double> rightstate,
-                                                                      tuple<double, double, double> geometry, double t,
-                                                                      int numtimesteps,
-                                                                      double gamma, int meshPoints) {
+map<string, vector<double>> ShockTubeEuler::compute_lax_wendrof(tuple<double, double, double> leftstate,
+                                                                tuple<double, double, double> rightstate,
+                                                                tuple<double, double, double> geometry, double t,
+                                                                int numtimesteps,
+                                                                double gamma, int meshPoints) {
     double pl, rhol, ul, pr, rhor, ur, xl, xr, xi;
     double art_viscoticity(2.5);
     vector<double> x, W1, W2, W3, F1, F2, F3, W1_p1,
@@ -129,48 +152,55 @@ map<string, vector<double>> ShockTubeLaxWendroff::compute_lax_wendrof(tuple<doub
     tie(pr, rhor, ur) = rightstate;
     tie(xl, xr, xi) = geometry;
     double delX = (xr - xl) / meshPoints;
-//    double delT = t / numtimesteps;
+    double delT = t / numtimesteps;
 
-    double delT = 0.25 * delX / sqrt(1.4 * max(700 + pr / rhor, 700 + pl / rhol));
+//    double delT = 0.25 * delX / sqrt(1.4 * max(700 + pr / rhor, 700 + pl / rhol));
     cout << "Delta X: " << delX << endl;
     cout << "Delta T: " << delT << endl;
     x = xx(xl, xr, delX);
     print("X", x);
-    W1_p1.resize(meshPoints);
-    W2_p1.resize(meshPoints);
-    W3_p1.resize(meshPoints);
-    W1_ph.resize(meshPoints);
-    W2_ph.resize(meshPoints);
-    W3_ph.resize(meshPoints);
-    W1_mh.resize(meshPoints);
-    W2_mh.resize(meshPoints);
-    W3_mh.resize(meshPoints);
-    F1_ph.resize(meshPoints);
-    F2_ph.resize(meshPoints);
-    F3_ph.resize(meshPoints);
-    F1_mh.resize(meshPoints);
-    F2_mh.resize(meshPoints);
-    F3_mh.resize(meshPoints);
-    P.resize(meshPoints);
+    W1_p1.resize(x.size());
+    W2_p1.resize(x.size());
+    W3_p1.resize(x.size());
+    W1_ph.resize(x.size());
+    W2_ph.resize(x.size());
+    W3_ph.resize(x.size());
+    W1_mh.resize(x.size());
+    W2_mh.resize(x.size());
+    W3_mh.resize(x.size());
+    F1_ph.resize(x.size());
+    F2_ph.resize(x.size());
+    F3_ph.resize(x.size());
+    F1_mh.resize(x.size());
+    F2_mh.resize(x.size());
+    F3_mh.resize(x.size());
+    P.resize(x.size());
     tie(W1, W2, W3) = W(x, xi, leftstate, rightstate, gamma);
     double nt = t / delT;
     for (int n = 0; n < nt; n++) {
         W1_ph[0] = W1[0];
         W2_ph[0] = W2[0];
         W3_ph[0] = W3[0];
-        W1_ph[meshPoints - 1] = W1[meshPoints - 1];
-        W2_ph[meshPoints - 1] = W2[meshPoints - 1];
-        W3_ph[meshPoints - 1] = W3[meshPoints - 1];
+        W1_ph[x.size() - 1] = W1[x.size() - 1];
+        W2_ph[x.size() - 1] = W2[x.size() - 1];
+        W3_ph[x.size() - 1] = W3[x.size() - 1];
         W1_mh[0] = W1[0];
         W2_mh[0] = W2[0];
         W3_mh[0] = W3[0];
-        W1_mh[meshPoints - 1] = W1[meshPoints - 1];
-        W2_mh[meshPoints - 1] = W2[meshPoints - 1];
-        W3_mh[meshPoints - 1] = W3[meshPoints - 1];
+        W1_mh[x.size() - 1] = W1[x.size() - 1];
+        W2_mh[x.size() - 1] = W2[x.size() - 1];
+        W3_mh[x.size() - 1] = W3[x.size() - 1];
         tie(F1, F2, F3, P) = flux(make_tuple(W1, W2, W3), gamma);
 
+        // flux
+//        for (int i = 0; i < x.size(); i++) {
+//            P[i] = (gamma - 1.) * ((2. * W3[i] * W1[i] - W2[i] * W2[i]) / (2. * (W1[i])));
+//            F1[i]=W2[i];
+//            F2[i] = (W2[i] * W2[i] / W1[i]) + P[i];
+//            F3[i] = (W2[i] / W1[i]) * (W3[i] + P[i]);
+//        }
         // predictor
-        for (int i = 1; i < meshPoints - 1; i++) {
+        for (int i = 1; i < x.size() - 1; i++) {
             W1_ph[i] = 0.5 * (W1[i] + W1[i + 1]) - ((0.5 * delT / delX) * (F1[i + 1] - F1[i]));
             W2_ph[i] = 0.5 * (W2[i] + W2[i + 1]) - (0.5 * delT / delX) * (F2[i + 1] - F2[i]);
             W3_ph[i] = 0.5 * (W3[i] + W3[i + 1]) - (0.5 * delT / delX) * (F3[i + 1] - F3[i]);
@@ -183,17 +213,27 @@ map<string, vector<double>> ShockTubeLaxWendroff::compute_lax_wendrof(tuple<doub
         // Flux predictor
         tie(F1_mh, F2_mh, F3_mh, P) = flux(make_tuple(W1_mh, W2_mh, W3_mh), gamma);
         tie(F1_ph, F2_ph, F3_ph, P) = flux(make_tuple(W1_ph, W2_ph, W3_ph), gamma);
-
+        // flux
+//        for (int i = 0; i < x.size(); i++) {
+////            P[i] = (gamma - 1.) * ((2. * W3[i] * W1[i] - W2[i] * W2[i]) / (2. * (W1[i])));
+//            F1_mh[i]=W2_mh[i];
+//            F2_mh[i] = (W2_mh[i] * W2_mh[i] / W1_mh[i]) + P[i];
+//            F3_mh[i] = (W2_mh[i] / W1_mh[i]) * (W3[i] + P[i]);
+//
+//            F1_mh[i]=W2_mh[i];
+//            F2_mh[i] = (W2_mh[i] * W2_mh[i] / W1_mh[i]) + P[i];
+//            F3_mh[i] = (W2_mh[i] / W1_ph[i]) * (W3[i] + P[i]);
+//        }
 
         //corrector
         // boundary conditions
         W1_p1[0] = W1[0];
         W2_p1[0] = W2[0];
         W3_p1[0] = W3[0];
-        W1_p1[meshPoints - 1] = W1[meshPoints - 1];
-        W2_p1[meshPoints - 1] = W2[meshPoints - 1];
-        W3_p1[meshPoints - 1] = W3[meshPoints - 1];
-        for (int i = 1; i < meshPoints - 1; i++) {
+        W1_p1[x.size() - 1] = W1[x.size() - 1];
+        W2_p1[x.size() - 1] = W2[x.size() - 1];
+        W3_p1[x.size() - 1] = W3[x.size() - 1];
+        for (int i = 1; i < x.size() - 1; i++) {
             W1_p1[i] = W1[i] - (delT / delX) * (F1_ph[i] - F1_mh[i]);
 
 
@@ -221,9 +261,10 @@ map<string, vector<double>> ShockTubeLaxWendroff::compute_lax_wendrof(tuple<doub
         W3 = W3_p1;
 
     }
-    print("Pressure", P);
-    transform(W2_p1.begin(), W2_p1.end(), W1_p1.begin(), W2_p1.begin(), std::divides<>{});
-    transform(W3_p1.begin(), W3_p1.end(), W1_p1.begin(), W3_p1.end(), std::divides<>{});
+    for (int i = 0; i < x.size(); i++) {
+        W2[i] = W2[i] / W1[i];
+        W3[i] = W3[i] / W1[i];
+    }
     return {{"x",      x},
             {"p",      P},
             {"rho",    W1_p1},
@@ -234,7 +275,113 @@ map<string, vector<double>> ShockTubeLaxWendroff::compute_lax_wendrof(tuple<doub
 
 }
 
-double ShockTubeLaxWendroff::sound_speed(
+map<string, vector<double>> ShockTubeEuler::compute_van_leer(tuple<double, double, double> leftstate,
+                                                             tuple<double, double, double> rightstate,
+                                                             tuple<double, double, double> geometry, double t,
+                                                             int numtimesteps, double gamma, int meshPoints) {
+    double pl, rhol, ul, pr, rhor, ur, xl, xr, xi;
+    vector<double> x, W1, W2, W3, F1, F2, F3, W1_p1,
+            W2_p1, W3_p1, F1_mh, F2_mh, F3_mh, F1_ph, F1_p, F2_p, F3_p, F1_n, F2_n, F3_n, P;
+    tie(pl, rhol, ul) = leftstate;
+    tie(pr, rhor, ur) = rightstate;
+    tie(xl, xr, xi) = geometry;
+    const double delX =
+            (xr - xl) / (meshPoints - 1);
+    const double delT = t / numtimesteps;
+//
+//    double delT = 0.25 * delX / sqrt(1.4 * max(700 + pr / rhor, 700 + pl / rhol));
+    cout << "Delta X: " << delX << endl;
+    cout << "Delta T: " << delT << endl;
+    x = xx(xl, xr, delX);
+    print("X", x);
+    W1_p1.resize(x.size());
+    W2_p1.resize(x.size());
+    W3_p1.resize(x.size());
+    F1_p.resize(x.size());
+    F2_p.resize(x.size());
+    F3_p.resize(x.size());
+    F1_n.resize(x.size());
+    F2_n.resize(x.size());
+    F3_n.resize(x.size());
+    W1.resize(x.size());
+    W2.resize(x.size());
+    W3.resize(x.size());
+    P.resize(x.size());
+    tie(W1, W2, W3) = W(x, xi, leftstate, rightstate, gamma);
+    print("W1", W1);
+    print("W2", W2);
+    print("W3", W3);
+    print("W3", W3);
+
+    vector<double> F_ap, F_an, F_bp, F_bn, C, M;
+    //        tie(W1, W2, W3) = Ws;
+    F_ap.resize(x.size());
+    F_an.resize(x.size());
+    F_bp.resize(x.size());
+    F_bn.resize(x.size());
+    P.resize(x.size());
+    C.resize(x.size());
+    M.resize(x.size());
+    float cfl = (delT / delX);
+    for (int n = 0; n < numtimesteps; n++) {
+        // boundary conditions
+        W1_p1[0] = W1[0];
+        W2_p1[0] = W2[0];
+        W3_p1[0] = W3[0];
+        W1_p1[x.size() - 1] = W1[x.size() - 1];
+        W2_p1[x.size() - 1] = W2[x.size() - 1];
+        W3_p1[x.size() - 1] = W3[x.size() - 1];
+
+        //flux
+        for (int i = 0; i < x.size(); i++) {
+            P[i] = (gamma - 1.) * ((2. * W3[i] * W1[i] - W2[i] * W2[i]) / (2. * (W1[i])));
+            C[i] = sqrt(gamma * P[i] / W1[i]);
+            M[i] = W2[i] / (W1[i] * C[i]);
+        }
+        for (int i = 0; i < x.size(); i++) {
+
+            F_ap[i] = 0.25 * W1[i] * C[i] * (M[i] + 1) * (M[i] + 1);
+            F_an[i] = -0.25 * W1[i] * C[i] * (M[i] - 1) * (M[i] - 1);
+            F_bp[i] = (gamma - 1) * M[i] * C[i] + 2 * C[i];
+            F_bn[i] = -(gamma - 1) * M[i] * C[i] - 2 * C[i];
+
+            //positive flux
+            F1_p[i] = F_ap[i];
+            F2_p[i] = F_ap[i] * F_bp[i] / gamma;
+            F3_p[i] = F_ap[i] * F_bp[i] * F_bp[i] / (2 * (gamma * gamma - 1));
+            //negative flux
+            F1_n[i] = F_an[i];
+            F2_n[i] = F_an[i] * F_bn[i] / gamma;
+            F3_n[i] = F_an[i] * F_bn[i] * F_bn[i] / (2 * (gamma * gamma - 1));
+        }
+
+        // update {W}
+        for (int i = 1; i < x.size() - 1; i++) {
+            W1_p1[i] = W1[i] - cfl * ((F1_p[i] - F1_p[i - 1]) + (F1_n[i + 1] - F1_n[i]));
+            W2_p1[i] = W2[i] - cfl * ((F2_p[i] - F2_p[i - 1]) + (F2_n[i + 1] - F2_n[i]));
+            W3_p1[i] = W3[i] - cfl * ((F3_p[i] - F3_p[i - 1]) + (F3_n[i + 1] - F3_n[i]));
+
+        }
+        W1 = W1_p1;
+        W2 = W2_p1;
+        W3 = W3_p1;
+    }
+
+
+    for (int i = 0; i < x.size(); i++) {
+        W2[i] = W2[i] / W1[i];
+        W3[i] = W3[i] / W1[i];
+    }
+    return {{"x",      x},
+            {"p",      P},
+            {"rho",    W1},
+            {"u",      W2},
+            {"energy", W3}
+//            {"APR",    temp}
+    };
+}
+
+double ShockTubeEuler::sound_speed(
         double gamma, double pressure, double density, double dustFrac) {
     double scale = sqrt(1 - dustFrac);
     return sqrt(gamma * pressure / density) * scale;
@@ -247,7 +394,7 @@ double rho5;
 double gamm;
 double dustFrac1;
 
-double ShockTubeLaxWendroff::shock_tube_function(double p4) {
+double ShockTubeEuler::shock_tube_function(double p4) {
 
     double z = (p4 / p5 - 1.);
     double c1 = sound_speed(gamm, p1, rho1, dustFrac1);
@@ -266,7 +413,7 @@ bool root_termination(double min, double max) {
 }
 
 tuple<tuple<double, double, double>, tuple<double, double, double>, tuple<double, double, double>,
-        tuple<double, double, double>, double> ShockTubeLaxWendroff::calculate_regions(
+        tuple<double, double, double>, double> ShockTubeEuler::calculate_regions(
         double pl, double ul, double rhol, double pr, double ur, double rhor, double gamma, double dustFrac) {
     rho1 = rhol;
     p1 = pl;
@@ -330,11 +477,11 @@ tuple<tuple<double, double, double>, tuple<double, double, double>, tuple<double
                       make_tuple(p5, rho5, u5), w);
 }
 
-tuple<double, double, double, double> ShockTubeLaxWendroff::calc_positions(double pl, double pr,
-                                                                           tuple<double, double, double> region1,
-                                                                           tuple<double, double, double> region3,
-                                                                           double w, double xi, double t, double gamma,
-                                                                           double dustFrac) {
+tuple<double, double, double, double> ShockTubeEuler::calc_positions(double pl, double pr,
+                                                                     tuple<double, double, double> region1,
+                                                                     tuple<double, double, double> region3,
+                                                                     double w, double xi, double t, double gamma,
+                                                                     double dustFrac) {
     double p1;
     double rho1;
     double u1;
@@ -379,11 +526,11 @@ std::vector<double> LinearSpacedArray(double a, double b, std::size_t N) {
 }
 
 tuple<vector<double>, vector<double>, vector<double>, vector<double>>
-ShockTubeLaxWendroff::create_arrays(double pl, double pr, double xl,
-                                    double xr, tuple<double, double, double, double> positions,
-                                    tuple<double, double, double> state1, tuple<double, double, double> state3,
-                                    tuple<double, double, double> state4, tuple<double, double, double> state5,
-                                    double npts, double gamma, double t, double xi, double dustFrac) {
+ShockTubeEuler::create_arrays(double pl, double pr, double xl,
+                              double xr, tuple<double, double, double, double> positions,
+                              tuple<double, double, double> state1, tuple<double, double, double> state3,
+                              tuple<double, double, double> state4, tuple<double, double, double> state5,
+                              double npts, double gamma, double t, double xi, double dustFrac) {
     double xhd, xft, xcd, xsh, p1, rho1, u1, p3, rho3, u3, p4, rho4, u4, p5, rho5, u5, fact;
 
     tie(xhd, xft, xcd, xsh) = positions;
@@ -456,11 +603,11 @@ ShockTubeLaxWendroff::create_arrays(double pl, double pr, double xl,
 
 }
 
-map<string, vector<double>> ShockTubeLaxWendroff::compute_exact(tuple<double, double, double> leftstate,
-                                                                tuple<double, double, double> rightstate,
-                                                                tuple<double, double, double> geometry,
-                                                                double t,
-                                                                double gamma, double npts, double dustFrac) {
+map<string, vector<double>> ShockTubeEuler::compute_exact(tuple<double, double, double> leftstate,
+                                                          tuple<double, double, double> rightstate,
+                                                          tuple<double, double, double> geometry,
+                                                          double t,
+                                                          double gamma, double npts, double dustFrac) {
     double pl;
     double rhol;
     double ul;

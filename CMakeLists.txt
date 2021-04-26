@@ -9,7 +9,7 @@ set(CMAKE_CXX_STANDARD 20)
 #
 #set(CMAKE_CXX_STANDARD 17)
 
-add_executable(HW main.cpp ShockTubeLaxWendroff.cpp ThomasAlgorithm.cpp FiniteDifference.cpp CombinedMethod.cpp ViscousBurgers.cpp )
+add_executable(HW main.cpp ShockTubeEuler.cpp ThomasAlgorithm.cpp FiniteDifference.cpp CombinedMethod.cpp ViscousBurgers.cpp )
 include(get_cpm.cmake)
 CPMAddPackage(
         NAME matplot

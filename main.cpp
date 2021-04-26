@@ -4,28 +4,29 @@
 using namespace std;
 
 #include <matplot/matplot.h>
-#include "ShockTubeLaxWendroff.h"
+#include "ShockTubeEuler.h"
 #include <vector>
 #include <map>
+#include <cmath>
 
 using namespace matplot;
 using namespace std;
 
-void print(vector<double> &matrix) {
+void print(vector<int> &matrix) {
     for (auto i = matrix.begin(); i != matrix.end(); ++i)
         std::cout << *i << ' ';
     std::cout << "\n";
 }
 
 void plotting(map<string, vector<double>> exact, map<string, vector<double>> results, string key,
-              map<string, string> lookup) {
+              map<string, string> lookup, int npt) {
     plot(results.at("x"), results.at(key), exact.at("x"), exact.at(key));
-    title(lookup.at(key));
-    legend({"Lax-Wendroff", "Exact"});;
+    title(lookup.at(key) + " | mesh = " + to_string(npt) + " | t= 0.2 | timestep = 256");
+    legend({"Van-Lee", "Exact"});;
     yrange({0, *max_element(results.at(key).begin(), results.at(key).end()) + 0.1});
     xlabel("Distance");
     ylabel(lookup.at(key));
-    save("L-W-" + lookup.at(key) + ".png");
+    save("V-L-"+ to_string(npt)  + lookup.at(key) + ".png");
 }
 
 int main() {
@@ -52,25 +53,33 @@ int main() {
     tuple<double, double, double> left_state = make_tuple(1, 1., 0.);
     tuple<double, double, double> right_state = make_tuple(.1, 0.125, 0.);
     tuple<double, double, double> geometry = make_tuple(0., 1., 0.5);
-    double t = .2;
+    double t = 0.2;
     double gamma = 1.4;
-    int npts = 500;
-    int timesteps = 128;
-    ShockTubeLaxWendroff laxWendroff;
-    map<string, vector<double>> exact = laxWendroff.compute_exact(left_state, right_state, geometry, t, gamma, npts);
-    map<string, vector<double>> results = laxWendroff.compute_lax_wendrof(left_state, right_state, geometry, t,
-                                                                          timesteps,
-                                                                          gamma, npts);
-    map<string, string> lookup;
-    lookup = {{"p",      "Pressure"},
-              {"rho",    "Density"},
-              {"u",      "Velocity"},
-              {"energy", "Energy"}};
+    int npts[] = {32,64,128,256,512,1000};
+    int timesteps = 256;
+    ShockTubeEuler laxWendroff;
 
-    plotting(exact, results, "p", lookup);
-    plotting(exact, results, "rho", lookup);
-    plotting(exact, results, "u", lookup);
-    plotting(exact, results, "energy", lookup);
+    for(int p:npts){
+        map<string, vector<double>> exact = laxWendroff.compute_exact(left_state, right_state, geometry, t, gamma, p);
+//    map<string, vector<double>> results = laxWendroff.compute_lax_wendrof(left_state, right_state, geometry, t,
+//                                                                          timesteps,
+//                                                                          gamma, p);
+
+        map<string, vector<double>> results = laxWendroff.compute_van_leer(left_state, right_state, geometry, t,
+                                                                           timesteps,
+                                                                           gamma, p);
+        map<string, string> lookup;
+        lookup = {{"p",      "Pressure"},
+                  {"rho",    "Density"},
+                  {"u",      "Velocity"},
+                  {"energy", "Energy"}};
+
+        plotting(exact, results, "p", lookup, p);
+        plotting(exact, results, "rho", lookup, p);
+        plotting(exact, results, "u", lookup, p);
+        plotting(exact, results, "energy", lookup, p);
+    }
+
 
 
     return 0;

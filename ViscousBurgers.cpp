@@ -167,8 +167,8 @@ ViscousBurgers::computeNewton(vector<double> Un, vector<double> Un1, double delt
                         (r * (Un1[i + 1] - (2 * Un1[i]) + Un1[i - 1]));
                 if (i == 1) {
                     rmatrixv[i - 1] = -d - (a * (Un1[i - 1] - Un[i - 1]));
-                } else if (i == idim-1) {
-                    rmatrixv[i - 1] = -d - (a * (Un1[i+1] - Un[i+1]));
+                } else if (i == idim - 1) {
+                    rmatrixv[i - 1] = -d - (a * (Un1[i + 1] - Un[i + 1]));
                 } else {
                     rmatrixv[i - 1] = isnan(-d) ? 0 : -d;
                 }

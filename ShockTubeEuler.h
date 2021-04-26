@@ -2,15 +2,15 @@
 // Created by Admin on 4/13/21.
 //
 
-#ifndef HW_SHOCKTUBELAXWENDROFF_H
-#define HW_SHOCKTUBELAXWENDROFF_H
+#ifndef HW_SHOCKTUBEEULER_H
+#define HW_SHOCKTUBEEULER_H
 
 #include <vector>
 #include <map>
 
 using namespace std;
 
-class ShockTubeLaxWendroff {
+class ShockTubeEuler {
 public:
     // region 1,3,4,5 not the rare-fraction region 2
     tuple<tuple<double, double, double>, tuple<double, double, double>, tuple<double, double, double>,
@@ -82,7 +82,15 @@ public:
          double gamma);
 
     vector<double> xx(double startX, double endX, double deltaX);
+
+    map<string, vector<double>>
+    compute_van_leer(tuple<double, double, double> leftstate, tuple<double, double, double> rightstate,
+                     tuple<double, double, double> geometry, double t, int numtimesteps, double gamma, int meshPoints);
+
+    tuple<vector<double>, vector<double>, vector<double>, vector<double>,vector<double>, vector<double>, vector<double>>
+    flux_van_leer(tuple<vector<double>, vector<double>, vector<double>> Ws, double gamma);
+
 };
 
 
-#endif //HW_SHOCKTUBELAXWENDROFF_H
+#endif //HW_SHOCKTUBEEULER_H
